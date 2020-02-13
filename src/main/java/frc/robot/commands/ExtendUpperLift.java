@@ -8,60 +8,42 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.controlPanelBigWheel;
+import frc.robot.subsystems.LiftSubsystem;
 
-public class bigWheelToPosition extends CommandBase {
+public class ExtendUpperLift extends CommandBase {
 
-  private controlPanelBigWheel m_wheel;
-  private double m_power;
-  private double m_counts;
+  private final LiftSubsystem m_liftSubsystem;
+  private boolean m_isFinished = false;
 
   /**
-   * Run the wheel until it reaches an encoder position.
+   * Creates a new ExtendLowerLift.
    */
-  public bigWheelToPosition(controlPanelBigWheel wheel, double power, int counts) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    m_wheel = wheel;
-    addRequirements(m_wheel);
-
-    m_power = power;
-    m_counts = counts;
+  public ExtendUpperLift(LiftSubsystem liftSubsystem) {
+    m_liftSubsystem = liftSubsystem;
+    addRequirements(m_liftSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_wheel.resetEncoder();
+    m_isFinished = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_wheel.setPower(m_power);
+    m_liftSubsystem.extendUpper();
+    m_isFinished = true;
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_wheel.setPower(0);
-    m_wheel.resetEncoder();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (m_power > 0) {
-      if (m_wheel.getEncoder() < m_counts) {
-        return true;
-      }
-        else return false;
-    }
-
-    else {
-      if (m_wheel.getEncoder() > m_counts) {
-        return true;
-      }
-        else return false;
-    }
+    return m_isFinished;
   }
 }
